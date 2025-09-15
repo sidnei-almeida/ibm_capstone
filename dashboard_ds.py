@@ -7,7 +7,7 @@ import plotly.express as px
 import dash_bootstrap_components as dbc
 import wget
 
-# Download the dataset if it doesn't exist
+# Download the dataset
 try:
     spacex_df = pd.read_csv('spacex_launch_dash.csv')
 except FileNotFoundError:
@@ -21,45 +21,58 @@ min_payload = spacex_df['Payload Mass (kg)'].min()
 # Initialize the app with a Bootstrap theme
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG])
 
-# Create the app layout using Bootstrap components
+# Create the app layout with vertical stacking
 app.layout = dbc.Container([
+    # Dashboard Title
     dbc.Row([
         dbc.Col(html.H1('SpaceX Launch Records Dashboard',
                         className='text-center text-primary, mb-4'),
                 width=12)
     ]),
 
+    # Dropdown for Launch Site Selection
+    dbc.Row([
+        dbc.Col(dcc.Dropdown(
+            id='site-dropdown',
+            options=[
+                {'label': 'All Sites', 'value': 'ALL'},
+                {'label': 'CCAFS LC-40', 'value': 'CCAFS LC-40'},
+                {'label': 'VAFB SLC-4E', 'value': 'VAFB SLC-4E'},
+                {'label': 'KSC LC-39A', 'value': 'KSC LC-39A'},
+                {'label': 'CCAFS SLC-40', 'value': 'CCAFS SLC-40'}
+            ],
+            value='ALL',
+            placeholder="Select a Launch Site",
+            searchable=True
+        ), width=12)
+    ], className="mb-4"),
+
+    # Pie Chart
+    dbc.Row([
+        dbc.Col(dcc.Graph(id='success-pie-chart'), width=12)
+    ], className="mb-4"),
+
+    # Payload Slider (above the scatter plot)
     dbc.Row([
         dbc.Col([
-            dcc.Dropdown(
-                id='site-dropdown',
-                options=[
-                    {'label': 'All Sites', 'value': 'ALL'},
-                    {'label': 'CCAFS LC-40', 'value': 'CCAFS LC-40'},
-                    {'label': 'VAFB SLC-4E', 'value': 'VAFB SLC-4E'},
-                    {'label': 'KSC LC-39A', 'value': 'KSC LC-39A'},
-                    {'label': 'CCAFS SLC-40', 'value': 'CCAFS SLC-40'}
-                ],
-                value='ALL',
-                placeholder="Select a Launch Site",
-                searchable=True,
-                className='mb-3'
-            ),
-            html.P("Payload Mass Range (Kg):"),
+            html.P("Payload Mass Range (Kg):", style={'fontWeight': 'bold'}),
             dcc.RangeSlider(
                 id='payload-slider',
                 min=0, max=10000, step=1000,
                 marks={i: f'{i}' for i in range(0, 10001, 2500)},
                 value=[min_payload, max_payload]
-            ),
-        ], width=12),
+            )
+        ], width=12)
     ], className="mb-4"),
 
+    # Scatter Plot
     dbc.Row([
-        dbc.Col(dcc.Graph(id='success-pie-chart'), width=12, md=6),
-        dbc.Col(dcc.Graph(id='success-payload-scatter-chart'), width=12, md=6),
+        dbc.Col(dcc.Graph(id='success-payload-scatter-chart'), width=12)
     ])
 ], fluid=True)
+
+
+# --- Callback Functions (No changes needed here) ---
 
 # Callback for the pie chart
 @app.callback(
@@ -76,16 +89,13 @@ def get_pie_chart(entered_site):
         )
     else:
         filtered_df = spacex_df[spacex_df['Launch Site'] == entered_site]
-        site_df = filtered_df['class'].value_counts().reset_index()
-        site_df.columns = ['class', 'count']
         fig = px.pie(
-            site_df,
-            values='count',
+            filtered_df,
             names='class',
-            title=f'<b>Success vs. Failure for {entered_site}</b>',
+            title=f'<b>Total Success vs. Failure for site {entered_site}</b>',
             template='plotly_dark',
             color='class',
-            color_discrete_map={1: '#42f56c', 0: '#f54242'} # Green for success, Red for failure
+            color_discrete_map={1: '#42f56c', 0: '#f54242'}
         )
     fig.update_layout(transition_duration=500)
     return fig
