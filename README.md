@@ -56,35 +56,35 @@ flowchart LR
 
 | Ficheiro | Descrição |
 |----------|-----------|
-| `jupyter-labs-spacex-data-collection-api-v2.ipynb` | Recolha de dados via API |
-| `jupyter-labs-webscraping.ipynb` | Web scraping complementar |
-| `labs-jupyter-spacex-Data wrangling-v2.ipynb` | *Data wrangling* e preparação |
-| `jupyter-labs-eda-sql-coursera_sqllite.ipynb` | EDA com SQL (SQLite) |
-| `jupyter-labs-eda-dataviz-v2.ipynb` | Visualização exploratória |
-| `lab-jupyter-launch-site-location-v2.ipynb` | Análise de localizações de lançamento |
-| `SpaceX-Machine-Learning-Prediction-Part-5-v1.ipynb` | **Pipeline de ML** — previsão da aterragem |
-| `dashboard_ds.py` | **Aplicação Dash** — gráficos pizza e dispersão (tema CYBORG) |
+| `notebooks/jupyter-labs-spacex-data-collection-api-v2.ipynb` | Recolha de dados via API |
+| `notebooks/jupyter-labs-webscraping.ipynb` | Web scraping complementar |
+| `notebooks/labs-jupyter-spacex-Data wrangling-v2.ipynb` | *Data wrangling* e preparação |
+| `notebooks/jupyter-labs-eda-sql-coursera_sqllite.ipynb` | EDA com SQL (SQLite) |
+| `notebooks/jupyter-labs-eda-dataviz-v2.ipynb` | Visualização exploratória |
+| `notebooks/lab-jupyter-launch-site-location-v2.ipynb` | Análise de localizações de lançamento |
+| `notebooks/SpaceX-Machine-Learning-Prediction-Part-5-v1.ipynb` | **Pipeline de ML** — previsão da aterragem |
+| `dashboard/dashboard_ds.py` | **Aplicação Dash** — gráficos pizza e dispersão (tema CYBORG) |
 
 ### Dados (CSV)
 
 | Ficheiro | Notas |
 |----------|--------|
-| `spacex_launch_dash.csv` | Usado pelo dashboard (payload, site, classe de sucesso, etc.) |
-| `spacex_launch_geo.csv` / variantes | Dados com componente geográfica |
-| `dataset_part_2.csv`, `dataset_part_3.csv` | Conjuntos intermédios ao longo dos labs |
+| `data/spacex_launch_dash.csv` | Usado pelo dashboard (payload, site, classe de sucesso, etc.) |
+| `data/spacex_launch_geo.csv` / variantes | Dados com componente geográfica |
+| `data/dataset_part_2.csv`, `data/dataset_part_3.csv` | Conjuntos intermédios ao longo dos labs |
 
 ---
 
 <a id="readme-dashboard"></a>
 ## Dashboard
 
-O ficheiro **`dashboard_ds.py`** implementa o **SpaceX Launch Records Dashboard** com:
+O ficheiro **`dashboard/dashboard_ds.py`** implementa o **SpaceX Launch Records Dashboard** com:
 
 - **Dropdown** de local de lançamento (ou “All Sites”).
 - **Gráfico circular** — distribuição de sucessos por site ou sucesso vs. falha por site.
 - **Slider de massa de payload (kg)** e **gráfico de dispersão** — payload vs. resultado (`class`), por versão do booster.
 - Tema visual **Plotly Dark** + **Dash Bootstrap (CYBORG)**.
-- Se `spacex_launch_dash.csv` não existir localmente, o script tenta **descarregar** o dataset público do Skills Network (URL no código).
+- Se `data/spacex_launch_dash.csv` não existir localmente, o script tenta **descarregar** o dataset público do Skills Network (URL no código) para `data/`.
 
 ---
 
@@ -97,19 +97,19 @@ O ficheiro **`dashboard_ds.py`** implementa o **SpaceX Launch Records Dashboard*
 cd ibm_capstone
 python3 -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install pandas dash plotly dash-bootstrap-components wget
+pip install -r requirements.txt
 ```
 
 ### Jupyter
 
-Abrir os `.ipynb` no Jupyter Lab / VS Code e executar as células na ordem sugerida pelos laboratórios.
+Abrir os notebooks em **`notebooks/`** no Jupyter Lab / VS Code e executar as células na ordem sugerida pelos laboratórios. Alguns *paths* nos notebooks podem ainda apontar para ficheiros na raiz antiga — ajusta para `../data/...` se necessário.
 
 ### Dashboard Dash
 
-Na raiz do projeto (com `spacex_launch_dash.csv` presente ou rede disponível para download):
+Na **raiz** do projeto (com `data/spacex_launch_dash.csv` presente ou rede disponível para o *download* automático):
 
 ```bash
-python dashboard_ds.py
+python dashboard/dashboard_ds.py
 ```
 
 Depois aceder ao URL indicado no terminal (normalmente `http://127.0.0.1:8050`).
@@ -120,11 +120,15 @@ Depois aceder ao URL indicado no terminal (normalmente `http://127.0.0.1:8050`).
 
 ```
 ibm_capstone/
-├── dashboard_ds.py
-├── *.ipynb                    # Labs do Capstone
-├── spacex_launch_dash.csv
-├── spacex_launch_geo*.csv
-├── dataset_part_*.csv
+├── dashboard/
+│   └── dashboard_ds.py
+├── data/
+│   ├── spacex_launch_dash.csv
+│   ├── spacex_launch_geo*.csv
+│   └── dataset_part_*.csv
+├── notebooks/
+│   └── *.ipynb                # Labs do Capstone
+├── requirements.txt
 └── README.md
 ```
 

@@ -6,14 +6,21 @@ from dash.dependencies import Input, Output
 import plotly.express as px
 import dash_bootstrap_components as dbc
 import wget
+from pathlib import Path
 
-# Download the dataset
+# Repo root = parent of dashboard/
+_ROOT = Path(__file__).resolve().parent.parent
+_DATA_DIR = _ROOT / "data"
+_DATA_DIR.mkdir(parents=True, exist_ok=True)
+_CSV_PATH = _DATA_DIR / "spacex_launch_dash.csv"
+
+# Download the dataset if missing
 try:
-    spacex_df = pd.read_csv('spacex_launch_dash.csv')
+    spacex_df = pd.read_csv(_CSV_PATH)
 except FileNotFoundError:
-    url = 'https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DS0321EN-SkillsNetwork/datasets/spacex_launch_dash.csv'
-    wget.download(url)
-    spacex_df = pd.read_csv('spacex_launch_dash.csv')
+    url = "https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DS0321EN-SkillsNetwork/datasets/spacex_launch_dash.csv"
+    wget.download(url, out=str(_CSV_PATH))
+    spacex_df = pd.read_csv(_CSV_PATH)
 
 max_payload = spacex_df['Payload Mass (kg)'].max()
 min_payload = spacex_df['Payload Mass (kg)'].min()
